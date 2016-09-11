@@ -476,4 +476,4 @@ $('#nav select')
   .select2({
     minimumResultsForSearch: Infinity
   })
-  .on('change', updateStatMap)
+  .on('change', function(){setTimeout(updateStatMap,300)})
