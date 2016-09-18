@@ -80,6 +80,7 @@ def get_args():
                                 help='List of pokemon to encounter for more stats')
     encounter_list.add_argument('-eblk', '--encounter-blacklist', action='append', default=[],
                                 help='List of pokemon to NOT encounter for more stats')
+    parser.add_argument('-odt', '--on-demand_timeout', help='Pause searching while web UI is inactive for this timeout(in seconds)', type=int, default=0)
     parser.add_argument('-ld', '--login-delay',
                         help='Time delay between each login attempt',
                         type=float, default=5)

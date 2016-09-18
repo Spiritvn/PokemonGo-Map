@@ -29,6 +29,7 @@
 #encounter-blacklist:   # blacklist of pokemon ids to NOT encounter. Incompatible with the whitelist.
 #speed-limit:           # set a speed limit in kilometers per hour - (default 0 means disabled)
 #max-speed-limit-delay: # set the maximum number of seconds that a worker will delay due to speed limit - (default 0 means disabled)
+#on-demand_timeout:     # Pause searching while web UI is inactive for this timeout(in seconds)
 
 # Misc
 #gmaps-key:             # your Google Maps API key
