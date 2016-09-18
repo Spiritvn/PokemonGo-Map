@@ -653,33 +653,35 @@ def parse_map(args, map_dict, step_location, db_update_queue, wh_update_queue, a
                 printPokemon(p['pokemon_data']['pokemon_id'], p['latitude'],
                              p['longitude'], d_t)
 
-                # Scan for IVs and moves
-                encounter_result = None
-                if (args.encounter and (p['pokemon_data']['pokemon_id'] in args.encounter_whitelist or
-                                        p['pokemon_data']['pokemon_id'] not in args.encounter_blacklist and not args.encounter_whitelist)):
-                    time.sleep(args.encounter_delay)
-                    encounter_result = api.encounter(encounter_id=p['encounter_id'],
-                                                     spawn_point_id=p['spawn_point_id'],
-                                                     player_latitude=step_location[0],
-                                                     player_longitude=step_location[1])
-                construct_pokemon_dict(pokemons, p, encounter_result, d_t)
+                #Check Pokemon Ignore list
+                if p['pokemon_data']['pokemon_id'] not in args.ignore_list:
+                  # Scan for IVs and moves
+                  encounter_result = None
+                  if (args.encounter and (p['pokemon_data']['pokemon_id'] in args.encounter_whitelist or
+                                          p['pokemon_data']['pokemon_id'] not in args.encounter_blacklist and not args.encounter_whitelist)):
+                      time.sleep(args.encounter_delay)
+                      encounter_result = api.encounter(encounter_id=p['encounter_id'],
+                                                       spawn_point_id=p['spawn_point_id'],
+                                                       player_latitude=step_location[0],
+                                                       player_longitude=step_location[1])
+                  construct_pokemon_dict(pokemons, p, encounter_result, d_t)
 
-                if args.webhooks:
-                    wh_update_queue.put(('pokemon', {
-                        'encounter_id': b64encode(str(p['encounter_id'])),
-                        'spawnpoint_id': p['spawn_point_id'],
-                        'pokemon_id': p['pokemon_data']['pokemon_id'],
-                        'latitude': p['latitude'],
-                        'longitude': p['longitude'],
-                        'disappear_time': calendar.timegm(d_t.timetuple()),
-                        'last_modified_time': p['last_modified_timestamp_ms'],
-                        'time_until_hidden_ms': p['time_till_hidden_ms'],
-                        'individual_attack': pokemons[p['encounter_id']]['individual_attack'],
-                        'individual_defense': pokemons[p['encounter_id']]['individual_defense'],
-                        'individual_stamina': pokemons[p['encounter_id']]['individual_stamina'],
-                        'move_1': pokemons[p['encounter_id']]['move_1'],
-                        'move_2': pokemons[p['encounter_id']]['move_2']
-                    }))
+                  if args.webhooks:
+                      wh_update_queue.put(('pokemon', {
+                          'encounter_id': b64encode(str(p['encounter_id'])),
+                          'spawnpoint_id': p['spawn_point_id'],
+                          'pokemon_id': p['pokemon_data']['pokemon_id'],
+                          'latitude': p['latitude'],
+                          'longitude': p['longitude'],
+                          'disappear_time': calendar.timegm(d_t.timetuple()),
+                          'last_modified_time': p['last_modified_timestamp_ms'],
+                          'time_until_hidden_ms': p['time_till_hidden_ms'],
+                          'individual_attack': pokemons[p['encounter_id']]['individual_attack'],
+                          'individual_defense': pokemons[p['encounter_id']]['individual_defense'],
+                          'individual_stamina': pokemons[p['encounter_id']]['individual_stamina'],
+                          'move_1': pokemons[p['encounter_id']]['move_1'],
+                          'move_2': pokemons[p['encounter_id']]['move_2']
+                      }))
 
         for f in cell.get('forts', []):
             if config['parse_pokestops'] and f.get('type') == 1:  # Pokestops
