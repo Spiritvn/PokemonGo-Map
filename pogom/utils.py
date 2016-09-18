@@ -185,6 +185,12 @@ def get_args():
     parser.add_argument('-spp', '--status-page-password', default=None,
                         help='Set the status page password')
     parser.add_argument('-el', '--encrypt-lib', help='Path to encrypt lib to be used instead of the shipped ones')
+    parser.add_argument('-sl', '--speed-limit',
+                        help='Speed limit in kilometers per hour',
+                        type=int, default=0)
+    parser.add_argument('-msld', '--max-speed-limit-delay',
+                        help='Maximum delay in seconds allowed due to speed limit',
+                        type=int, default=0)
     verbosity = parser.add_mutually_exclusive_group()
     verbosity.add_argument('-v', '--verbose', help='Show debug messages from PomemonGo-Map and pgoapi. Optionally specify file to log to.', nargs='?', const='nofile', default=False, metavar='filename.log')
     verbosity.add_argument('-vv', '--very-verbose', help='Like verbose, but show debug messages from all modules as well.  Optionally specify file to log to.', nargs='?', const='nofile', default=False, metavar='filename.log')
@@ -204,6 +210,26 @@ def get_args():
         if args.accountcsv is not None:
             with open(args.accountcsv, 'r') as f:
                 for num, line in enumerate(f, 1):
+
+                    fields = []
+
+                    # First time around populate num_fields with current field count.
+                    if num_fields < 0:
+                        num_fields = line.count(',') + 1
+
+                    csv_input = []
+                    csv_input.append('')
+                    csv_input.append('<username>')
+                    csv_input.append('<username>,<password>')
+                    csv_input.append('<ptc/gmail>,<username>,<password>')
+
+                    # If the number of fields is differend this is not a CSV
+                    if num_fields != line.count(',') + 1:
+                        print(sys.argv[0] + ": Error parsing CSV file on line " + str(num) + ". Your file started with the following input, '" + csv_input[num_fields] + "' but now you gave us '" + csv_input[line.count(',') + 1] + "'.")
+                        sys.exit(1)
+
+                    field_error = ''
+                    line = line.strip()
 
                     # Ignore blank lines and comment lines
                     if len(line.strip()) == 0 or line.startswith('#'):
@@ -259,6 +285,12 @@ def get_args():
                 errors.append('The number of provided passwords ({}) must match the username count ({})'.format(num_passwords, num_usernames))
             if num_auths > 1 and num_usernames != num_auths:
                 errors.append('The number of provided auth ({}) must match the username count ({})'.format(num_auths, num_usernames))
+
+        if args.speed_limit < 0:
+            errors.append('Speed limit cannot be less than 0')
+
+        if args.max_speed_limit_delay < 0:
+            errors.append('Maximum delay due to speed limit cannot be less than 0')
 
         if len(errors) > 0:
             parser.print_usage()

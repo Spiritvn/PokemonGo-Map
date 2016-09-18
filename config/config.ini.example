@@ -27,6 +27,8 @@
 #encounter-delay:       # delay before starting an encounter. defaults to 1, must not be zero
 #encounter-whitelist:   # whitelist of pokemon ids to encounter.
 #encounter-blacklist:   # blacklist of pokemon ids to NOT encounter. Incompatible with the whitelist.
+#speed-limit:           # set a speed limit in kilometers per hour - (default 0 means disabled)
+#max-speed-limit-delay: # set the maximum number of seconds that a worker will delay due to speed limit - (default 0 means disabled)
 
 # Misc
 #gmaps-key:             # your Google Maps API key
